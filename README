@@ -1,0 +1,84 @@
+# Online-library
+
+Programul realizeaza gestionarea cartilor pe baza unui set
+de comenzi citite dintr-un fisier de intrare txt .
+	Pentru gestionarea cartilor s-a impus utilizarea structurilor de
+date :
+	T1 - arbore de prefixe(trie), cheie = titlul cartii, informatia retinuta
+		la finalul caii este un pointer catre o structura cu informatii
+		despre carte (nodul poate fi frunza sau sfarsit de cuvant).
+	T2 - arbore de prefixe(trie), cheie = autor, informatia retinuta este
+ 		un alt arbore(trie) cu cartile scrise de acel autor.
+
+	S-au utilizat urmatoarele structuri de date :
+	 pentru structura de carte : 
+		  TCarte : char * titlu; char * autor; int rating; int nr_pag;
+
+	 pentru arbori generici - trie T1, T2 :
+		 *TArb : void* info - pointer catre struct TCarte, struct TNod;
+		  	 bool frunza - TRUE - sfarsit de cuvant
+			 nod *fii[A_SIZE] - A_SIZE este un alfabet dat de 68 caractere
+						
+	Programul principal consta dintr-o bucla while in care se citeste linie
+cu linie fisierul de intrare, executa comanda si rezultatul comenzii este scris
+in fisierul de iesire.
+	Comenzile citite din fisier sunt :
+
+	add_book <titlu>:<autor>:<rating>:<numar_pagini> - comanda adauga cartea atat
+		in T1 cat si in T2. Algortimul de implementare consta in urmatoarele
+		etape :
+			* se cauta titlul cartii in arborele T1 utilizand functia CautaTitlu() ;
+			* daca s-a gasit titlul in arborele T1, nu se face nimic;
+			* daca nu s-a gasit titlul atunci se aloca memorie pentru structurile de 
+			arbore si TCarte si se adauga in arborele T1 utilizand functia InsertA() ;
+			* utilizand functia CautaAutor() (intoarce un pointer catre arborele 
+			de carti proprii ale autorului) se identifica autorul in arborele T2 ;
+			* daca nu se gaseste se construiesc nodurile corespunzator cheii (autor)
+			in T2 si in campul info al nodului terminal se adauga sau se construieste
+			un arbore ce contine cartile proprii ale autorului ;
+			* daca s-a gasit autorul se verifica daca titlul cartii se gaseste in
+			arborele de carti si se adauga sau se construieste arborele de carti
+			proprii ale autorului.
+
+	search_book <titlu> si search_book <prefix_titlu>~ - Algoritmul de implementare al comenzii 
+		consta in urmatoarele etape :
+			* se verifica daca argumentul comenzii contine caracterul '~';
+			* daca nu are, argumentul este <titlu> si utilizand functia CautaTitlu()
+		se afiseaza rezultatul solicitat;
+			* daca are '~', argumentul comenzii este <prefix_titlu>, se cauta titlu
+		utilizand functia de cautare prefix CautaPTitlu() si se afiseaza utilizand 
+		functia AfisFA3, primele 3 titluri de carti.
+	
+	list_author <autor> si list_author <prefix_autor>~ - Algoritmul de implementare al 
+		comenzii consta in urmatoarele etape :
+			* se verifica daca argumentul comenzii contine caracterul '~';
+			* daca nu are, argumentul este <autor> si utilizand functia CautaAutor()
+		se afiseaza rezultatul solicitat cu functia de afisare AfisFa();
+			* daca are '~', argumentul comenzii este <prefix_autor>, se cauta titlu
+		utilizand functia de cautare prefix CautaPTitlu() si se afiseaza utilizand 
+		functia AfisFAA3, primii 3 autori cu acel prefix.
+
+	search_by_author <autor>:<titlu> , search_by_author <prefix_autor>~ , 
+	search_by_author <autor>:<prefix_titlu>~ - Algoritmul de implementare al 
+		comenzii consta in urmatoarele etape :
+			* se verifica daca argumentul <autor> contine caracterul '~';
+			* daca <autor> nu contine '~', se verifica daca argumentul <titlu> 
+			  contine '~';
+ 			   * daca <titlu> nu contine'~' comanda este 
+			     search_by_author <autor>:<titlu> si utilizand functia CautaAutor() si 
+			     CautaTitlu() se afiseaza rezultatul solicitat;
+			   * daca <titlu> contine '~' comanda este 
+			      search_by_author <autor>:<prefix_titlu>~ si utilizand functiile
+			      CautaAutor(), CautaPTitlu() si AfisFA3() se afiseaza rezultatul
+			      solicitat;
+			* daca <autor> contine '~', comanda este search_by_author <prefix_autor>~
+			  si utilizand comanda CautaPTitlu() si AfisFAA3() se afiseaza rezultatul
+			  solicitat;
+
+	delete_book <titlu> - Algoritmul de implementare al  comenzii consta in
+		 urmatoarele etape :
+			* cauta cartea in arborele T2 utilizand functia CautaAutor()
+			* daca exista cartea, se sterge cartea cu functia delete_book()
+			 si daca era ultima carte se sterge autorul din T2 cu functia
+			 delete_autor();
+			* se sterge cartea din arborele T1 cu functia delete_book()
